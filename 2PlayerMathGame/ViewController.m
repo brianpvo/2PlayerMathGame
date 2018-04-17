@@ -14,8 +14,11 @@
 @property (nonatomic) NSMutableString *answer;
 @property (weak, nonatomic) IBOutlet UILabel *player1Score;
 @property (weak, nonatomic) IBOutlet UILabel *player2Score;
+@property (weak, nonatomic) IBOutlet UILabel *answerLabel;
 
 @property (nonatomic) GameModel *gameModel;
+
+-(void)answerAnimation;
 
 @end
 
@@ -43,7 +46,9 @@
 }
 
 - (IBAction)submit:(id)sender {
-    [self.gameModel updatePlayerStats: self.answer];
+    [self answerAnimation];
+    [self newGame];
+    
     if ([self.gameModel.currentPlayer.name isEqualToString:@"Player 1"]) {
         self.player1Score.text = self.gameModel.updateScoreLifeLabel;
     }
@@ -55,7 +60,36 @@
     self.question.text = self.gameModel.question;
     [self.answer setString:@""];
     
-    
+}
+
+-(void)answerAnimation {
+    self.answerLabel.alpha = 1;
+    if ([self.gameModel updatePlayerStats: self.answer]) {
+        self.answerLabel.backgroundColor = [UIColor greenColor];
+        self.answerLabel.text = @"CORRECT";
+        [UIView animateWithDuration:1 animations:^{self.answerLabel.alpha = 0;}];
+    } else {
+        self.answerLabel.backgroundColor = [UIColor redColor];
+        self.answerLabel.text = @"INCORRECT";
+    }
+    [UIView animateWithDuration:1 animations:^{self.answerLabel.alpha = 0;}];
+}
+
+-(void)newGame {
+    if (self.gameModel.gameOver) {
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Restart Game" message:@"Do you want to restart your game?" preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *yes = [UIAlertAction actionWithTitle:@"YES" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            self.gameModel = [[GameModel alloc] init];
+            self.answer = [[NSMutableString alloc] init];
+            self.question.text = self.gameModel.question;
+            self.player1Score.text = self.gameModel.updateScoreLifeLabel;
+            self.player2Score.text = self.gameModel.updateScoreLifeLabel;
+        }];
+        UIAlertAction *no = [UIAlertAction actionWithTitle:@"NO" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {}];
+        [alert addAction:yes];
+        [alert addAction:no];
+        [self presentViewController:alert animated:true completion:nil];
+    }
 }
 
 @end

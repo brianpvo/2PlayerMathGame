@@ -37,21 +37,25 @@
     return [_players objectAtIndex:self.currentIndex];
 }
 
--(void)updatePlayerStats:(NSString *)userAnswer {
+-(BOOL)updatePlayerStats:(NSString *)userAnswer {
     NSString *answer = [NSString stringWithFormat:@"%li", self.leftNumber + self.rightNumber];
+    self.leftNumber = arc4random_uniform(20) + 1;
+    self.rightNumber = arc4random_uniform(20) + 1;
+    
     if ([answer isEqualToString:userAnswer]) {
         NSLog(@"correct!");
         self.currentPlayer.score++;
+        return TRUE;
     }
     else {
         if (self.currentPlayer.life > 1) {
             self.currentPlayer.life--;
         } else {
+            self.currentPlayer.life = 0;
             self.gameOver = YES;
         }
+        return FALSE;
     }
-    self.leftNumber = arc4random_uniform(20) + 1;
-    self.rightNumber = arc4random_uniform(20) + 1;
 }
 
 -(NSString *)updateScoreLifeLabel {
@@ -61,6 +65,10 @@
 -(void)nextPlayer {
     self.currentIndex++;
     self.currentIndex = self.currentIndex % 2;
+}
+
+-(BOOL)isGameOver {
+    return self.gameOver;
 }
 
 @end

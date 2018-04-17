@@ -21,10 +21,12 @@
 
 -(Player *)currentPlayer;
 
--(void)updatePlayerStats:(NSString *) userAnswer;
+-(BOOL)updatePlayerStats:(NSString *) userAnswer;
 
 -(NSString *)updateScoreLifeLabel;
 
 -(void)nextPlayer;
+
+-(BOOL)isGameOver;
 
 @end
